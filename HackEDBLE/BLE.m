@@ -56,7 +56,7 @@ static int rssi = 0;
   // set up find peripherals that provide specified service(s)
   // TODO seems to be broken currently, so find any peripheral and then filter in the delegate
 #if 0
-  NSString *serviceUUIDStr = @ENVISAS_COMMAND_SERVICE_UUID;
+  NSString *serviceUUIDStr = @BLE_NANO_SERVICE_UUID;
   CBUUID *serviceUUID = [CBUUID UUIDWithString:serviceUUIDStr];
   NSArray<CBUUID *> *services = [NSArray arrayWithObjects:serviceUUIDStr, nil];
 #if TARGET_OS_IPHONE
@@ -181,15 +181,15 @@ static int rssi = 0;
 
 -(void) read
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@ENVISAS_COMMAND_SERVICE_UUID];
-  CBUUID *uuid_char = [CBUUID UUIDWithString:@ENVISAS_COMMAND_INVOKE_CHARACTERISTIC_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
+  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
   
   [self readValue:uuid_service characteristicUUID:uuid_char p:activePeripheral];
 }
 
 -(void) write:(NSData *)data toUUID:(CBUUID *)uuid
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@ENVISAS_COMMAND_SERVICE_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
   
   [self writeValue:uuid_service characteristicUUID:uuid p:activePeripheral data:data];
 }
@@ -252,8 +252,8 @@ static int rssi = 0;
 
 -(void) enableReadNotification:(CBPeripheral *)p
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@ENVISAS_COMMAND_SERVICE_UUID];
-  CBUUID *uuid_char = [CBUUID UUIDWithString:@ENVISAS_COMMAND_INVOKE_CHARACTERISTIC_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
+  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
   
   [self notification:uuid_service characteristicUUID:uuid_char p:p on:YES];
 }
@@ -471,13 +471,13 @@ static int rssi = 0;
 //    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@ENVISAS_COMMAND_SPARE_CHARACTERISTIC_UUID]])
 //      NSLog(@"didUpdateValueForCharacteristic for %@",@ENVISAS_COMMAND_SPARE_CHARACTERISTIC_UUID);
 //
-//    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@ENVISAS_COMMAND_INVOKE_CHARACTERISTIC_UUID]])
-//      NSLog(@"didUpdateValueForCharacteristic for %@",@ENVISAS_COMMAND_INVOKE_CHARACTERISTIC_UUID);
+//    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]])
+//      NSLog(@"didUpdateValueForCharacteristic for %@",@BLE_NANO_TX_CHAR_UUID);
 
     // We use this characteristic to exchange messages with the peripheral, so pass the update
     // along to the delegate
-    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@ENVISAS_COMMAND_RESPONSE_CHARACTERISTIC_UUID]]) {
-//      NSLog(@"didUpdateValueForCharacteristic for %@",@ENVISAS_COMMAND_RESPONSE_CHARACTERISTIC_UUID);
+    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@BLE_NANO_RX_CHAR_UUID]]) {
+//      NSLog(@"didUpdateValueForCharacteristic for %@",@BLE_NANO_RX_CHAR_UUID);
       if (characteristic.value) {
 //        NSLog(@"read value got %lu data",[characteristic.value length]);
         [[self delegate] bleHaveDataFor:characteristic];

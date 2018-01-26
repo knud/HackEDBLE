@@ -19,7 +19,6 @@
 -(void) bleDidConnect;
 -(void) bleDidDisconnect;
 -(void) bleDidUpdateRSSI:(NSNumber *) rssi;
-//-(void) bleDidReceiveData:(unsigned char *) data length:(int) length;
 -(void) bleHaveDataFor:(CBCharacteristic *)characteristic;
 -(void) bleCentralManagerStateChanged:(CBManagerState) state;
 -(void) bleServicesFound;
