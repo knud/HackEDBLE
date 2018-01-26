@@ -64,7 +64,7 @@
 
 - (void)didReceiveMemoryWarning {
   [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
+  // TODO Dispose of any resources that can be recreated.
 }
 
 #pragma mark - UI actions
@@ -99,6 +99,34 @@
   }
 }
 
+#pragma mark - BLE commands
+
+- (void) scanForPeripherals
+{
+  scanningForPeripherals = true;
+  if (ble.activePeripheral)
+    if(ble.activePeripheral.state == CBPeripheralStateConnected)
+    {
+      [[ble CM] cancelPeripheralConnection:[ble activePeripheral]];
+      return;
+    }
+  
+  if (ble.peripherals)
+    ble.peripherals = nil;
+  
+  // look for the Nano for 3 seconds
+  [ble findPeripherals:3];
+  
+  [NSTimer scheduledTimerWithTimeInterval:(float)3.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
+}
+
+-(void) connectionTimer:(NSTimer *)timer
+{
+  NSLog(@"connectionTimer");
+  // TODO turn off progress indicator
+//  [activityIndicator stopAnimating];
+}
+
 #pragma mark - BLE delegate methods
 
 -(void) bleCentralManagerStateChanged:(CBManagerState) state
@@ -126,45 +154,6 @@
   }
 }
 
-#pragma mark - BLE actions
-
-- (void) scanForPeripherals
-{
-  scanningForPeripherals = true;
-  if (ble.activePeripheral)
-    if(ble.activePeripheral.state == CBPeripheralStateConnected)
-    {
-      [[ble CM] cancelPeripheralConnection:[ble activePeripheral]];
-      return;
-    }
-  
-  if (ble.peripherals)
-    ble.peripherals = nil;
-  
-  // look for the Nano for 3 seconds
-  [ble findPeripherals:3];
-  
-  [NSTimer scheduledTimerWithTimeInterval:(float)3.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
-  
-}
-
--(void) connectionTimer:(NSTimer *)timer
-{
-  
-  NSLog(@"connectionTimer");
-  // reset the right bar button
-  [activityIndicator stopAnimating];
-  [self navigationItem].rightBarButtonItem = refreshBarButton;
-  
-  if (ble.peripherals.count > 0) {
-    // connect and check each peripheral for our services
-//    [ble connectPeripheral:[ble.peripherals objectAtIndex:self.currentPeripheral]];
-  } else {
-  }
-}
-
-#pragma mark - BLE delegate
-
 // When connected, this will be called
 -(void) bleDidConnect
 {
@@ -172,7 +161,6 @@
   connected = true;
   [self.connectToNanoButton setEnabled:YES];
 
-//  [self.connectToNanoButton.titleLabel setText:@"Connected"];
   [self.connectToNanoButton setBackgroundColor:[UIColor greenColor]];
 
   // Find the service
@@ -180,8 +168,6 @@
   NSArray<CBUUID *> *serviceUUIDs = [NSArray arrayWithObjects:serviceUUID, nil];
   [self.ble findServicesFrom:self.peripheral services:serviceUUIDs];
 }
-
-NSTimer *rssiTimer;
 
 - (void)bleDidDisconnect
 {
@@ -207,7 +193,6 @@ NSTimer *rssiTimer;
   NSLog(@"->bleServicesFound");
   if (self.ble.activePeripheral)
   {
-//    [self.connectToNanoButton.titleLabel setText:@"Connected"];
     if (self.ble.activePeripheral.services)
     {
       unsigned long numServices = [self.ble.activePeripheral.services count];
@@ -235,7 +220,6 @@ NSTimer *rssiTimer;
 -(void) bleServiceCharacteristicsFound
 {
   NSLog(@"->bleServiceCharacteristicsFound");
-//  [self.connectToNanoButton.titleLabel setText:@"Connected"];
   CBUUID *txCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
   CBUUID *rxCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_RX_CHAR_UUID];
   for (int i=0; i < self.service.characteristics.count; i++)
@@ -263,19 +247,16 @@ NSTimer *rssiTimer;
     if (c.properties & CBCharacteristicPropertyAuthenticatedSignedWrites)
       printf("  has authenticated signed writes\n");
     
-    // Ignore the spare for now...
-    if ([c.UUID.UUIDString isEqual:txCharacteristicUUID.UUIDString]) {
-    }
-    if ([c.UUID.UUIDString isEqual:rxCharacteristicUUID.UUIDString])
-    {
+    if ([c.UUID.UUIDString isEqual:rxCharacteristicUUID.UUIDString]) {
       // enable notification for this characteristic on the peripheral
       [self.ble.activePeripheral setNotifyValue:YES forCharacteristic:c];
+    }
+    if ([c.UUID.UUIDString isEqual:txCharacteristicUUID.UUIDString])
+    {
       [self.ledSwitch setEnabled:YES];
-
     }
   }
 }
-
 
 -(void) bleFindPeripheralsFinished
 {
@@ -295,6 +276,5 @@ NSTimer *rssiTimer;
     }
   }
 }
-
 
 @end
