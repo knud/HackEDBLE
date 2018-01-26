@@ -14,7 +14,8 @@
 		7A3580EF2019A84E001D7D94 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A3580EE2019A84E001D7D94 /* Assets.xcassets */; };
 		7A3580F22019A84E001D7D94 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A3580F02019A84E001D7D94 /* LaunchScreen.storyboard */; };
 		7A3580F52019A84E001D7D94 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3580F42019A84E001D7D94 /* main.m */; };
-		7A3580FC2019A8ED001D7D94 /* RB_BLE in Resources */ = {isa = PBXBuildFile; fileRef = 7A3580FB2019A8EC001D7D94 /* RB_BLE */; };
+		7A5DA42A201A8E4900861BA3 /* BLEUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A5DA428201A8E4900861BA3 /* BLEUtils.m */; };
+		7A5DA42B201A8E4900861BA3 /* BLE.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A5DA429201A8E4900861BA3 /* BLE.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +30,11 @@
 		7A3580F12019A84E001D7D94 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7A3580F32019A84E001D7D94 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A3580F42019A84E001D7D94 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		7A3580FB2019A8EC001D7D94 /* RB_BLE */ = {isa = PBXFileReference; lastKnownFileType = folder; path = RB_BLE; sourceTree = "<group>"; };
+		7A5DA425201A8E4800861BA3 /* BLEUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLEUtils.h; sourceTree = "<group>"; };
+		7A5DA426201A8E4800861BA3 /* BLEDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLEDefines.h; sourceTree = "<group>"; };
+		7A5DA427201A8E4800861BA3 /* BLE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLE.h; sourceTree = "<group>"; };
+		7A5DA428201A8E4900861BA3 /* BLEUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BLEUtils.m; sourceTree = "<group>"; };
+		7A5DA429201A8E4900861BA3 /* BLE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BLE.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +67,11 @@
 		7A3580E12019A84E001D7D94 /* HackEDBLE */ = {
 			isa = PBXGroup;
 			children = (
-				7A3580FB2019A8EC001D7D94 /* RB_BLE */,
+				7A5DA427201A8E4800861BA3 /* BLE.h */,
+				7A5DA429201A8E4900861BA3 /* BLE.m */,
+				7A5DA426201A8E4800861BA3 /* BLEDefines.h */,
+				7A5DA425201A8E4800861BA3 /* BLEUtils.h */,
+				7A5DA428201A8E4900861BA3 /* BLEUtils.m */,
 				7A3580E22019A84E001D7D94 /* AppDelegate.h */,
 				7A3580E32019A84E001D7D94 /* AppDelegate.m */,
 				7A3580E52019A84E001D7D94 /* ViewController.h */,
@@ -135,7 +144,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7A3580FC2019A8ED001D7D94 /* RB_BLE in Resources */,
 				7A3580F22019A84E001D7D94 /* LaunchScreen.storyboard in Resources */,
 				7A3580EF2019A84E001D7D94 /* Assets.xcassets in Resources */,
 				7A3580EA2019A84E001D7D94 /* Main.storyboard in Resources */,
@@ -152,6 +160,8 @@
 				7A3580ED2019A84E001D7D94 /* HackEDBLE.xcdatamodeld in Sources */,
 				7A3580E72019A84E001D7D94 /* ViewController.m in Sources */,
 				7A3580F52019A84E001D7D94 /* main.m in Sources */,
+				7A5DA42B201A8E4900861BA3 /* BLE.m in Sources */,
+				7A5DA42A201A8E4900861BA3 /* BLEUtils.m in Sources */,
 				7A3580E42019A84E001D7D94 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

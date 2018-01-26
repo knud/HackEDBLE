@@ -24,4 +24,6 @@
 // Rx service characteristic
 #define BLE_NANO_RX_CHAR_UUID "713D0002-503E-4C75-BA94-3148F18D941E"
 
+#define BLE_DEVICE_NAME "BLENano"
+
 

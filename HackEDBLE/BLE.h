@@ -12,6 +12,7 @@
 #else
     #import <IOBluetooth/IOBluetooth.h>
 #endif
+#import "BLEDefines.h"
 
 @protocol BLEDelegate
 
@@ -35,6 +36,7 @@
 
 @property (nonatomic,assign) id <BLEDelegate> delegate;
 @property (strong, nonatomic) NSMutableArray *peripherals;
+@property (strong, nonatomic) NSMutableArray *advertisingData;
 @property (strong, nonatomic) CBPeripheral *activePeripheral;
 @property (strong, nonatomic) CBCentralManager *CM;
 
@@ -44,6 +46,7 @@
 -(int) findPeripherals:(int) timeout;
 -(void) scanTimer:(NSTimer *)timer;
 -(void) connectPeripheral:(CBPeripheral *)peripheral;
+-(void) disconnectPeripheral:(CBPeripheral *)peripheral;
 -(BOOL) isConnected;
 -(void) printKnownPeripherals;
 -(void) printPeripheralInfo:(CBPeripheral*)peripheral;

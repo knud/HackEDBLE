@@ -9,7 +9,6 @@
 
 
 #import "BLE.h"
-#import "BLEDefines.h"
 #import "BLEUtils.h"
 
 @implementation BLE
@@ -17,6 +16,7 @@
 @synthesize delegate;
 @synthesize CM;
 @synthesize peripherals;
+@synthesize advertisingData;
 @synthesize activePeripheral;
 
 static bool isConnected = false;
@@ -57,8 +57,9 @@ static int rssi = 0;
   // TODO seems to be broken currently, so find any peripheral and then filter in the delegate
 #if 0
   NSString *serviceUUIDStr = @BLE_NANO_SERVICE_UUID;
+  NSLog(@"Scanning for service UUID %@",serviceUUIDStr);
   CBUUID *serviceUUID = [CBUUID UUIDWithString:serviceUUIDStr];
-  NSArray<CBUUID *> *services = [NSArray arrayWithObjects:serviceUUIDStr, nil];
+  NSArray<CBUUID *> *services = [NSArray arrayWithObjects:serviceUUID, nil];
 #if TARGET_OS_IPHONE
   [self.CM scanForPeripheralsWithServices:services options:nil];
 #else
@@ -90,6 +91,12 @@ static int rssi = 0;
   self.activePeripheral.delegate = self;
   [self.CM connectPeripheral:self.activePeripheral
                      options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+}
+
+-(void) disconnectPeripheral:(CBPeripheral *)peripheral
+{
+  if (self.activePeripheral == peripheral)
+    [self.CM cancelPeripheralConnection:peripheral];
 }
 
 -(BOOL) isConnected
@@ -334,27 +341,24 @@ static int rssi = 0;
   NSLog(@"new peripheraal with RSSI %@",RSSI);
   if (!self.peripherals)
     self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
-  else
+  if (!self.advertisingData)
+    self.advertisingData = [[NSMutableArray alloc] initWithObjects:advertisementData,nil];
+  for(int i = 0; i < self.peripherals.count; i++)
   {
-    for(int i = 0; i < self.peripherals.count; i++)
+    CBPeripheral *p = [self.peripherals objectAtIndex:i];
+    
+    if ((p.identifier == NULL) || (peripheral.identifier == NULL))
+      continue;
+    
+    if ([BLEUtils equal:p.identifier UUID2:peripheral.identifier])
     {
-      CBPeripheral *p = [self.peripherals objectAtIndex:i];
-      
-      if ((p.identifier == NULL) || (peripheral.identifier == NULL))
-        continue;
-      
-      if ([BLEUtils equal:p.identifier UUID2:peripheral.identifier])
-      {
-        [self.peripherals replaceObjectAtIndex:i withObject:peripheral];
-        NSLog(@"Duplicate UUID found updating...");
-        return;
-      }
+      [self.peripherals replaceObjectAtIndex:i withObject:peripheral];
+      NSLog(@"Duplicate UUID found updating...");
+      return;
     }
-    
-    [self.peripherals addObject:peripheral];
-    
-    NSLog(@"New UUID, adding");
   }
+  [self.peripherals addObject:peripheral];
+  [self.advertisingData addObject:advertisementData];
 }
 
 #pragma mark - CBCentralManagerDelegate monitoring changes to the central manager's state

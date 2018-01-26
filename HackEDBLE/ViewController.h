@@ -11,6 +11,16 @@
 
 @interface ViewController : UIViewController <BLEDelegate>
 
+@property (strong, nonatomic) BLE *ble;
+@property (weak, nonatomic) CBPeripheral *peripheral;
+@property (strong, nonatomic) CBService *service;
+
+@property (weak, nonatomic) IBOutlet UIButton *connectToNanoButton;
+@property (weak, nonatomic) IBOutlet UISwitch *ledSwitch;
+@property (weak, nonatomic) IBOutlet UIImageView *ledImage;
+
+- (IBAction)findNano:(UIButton *)sender;
+- (IBAction)ledSwitched:(id)sender;
 
 @end
 
