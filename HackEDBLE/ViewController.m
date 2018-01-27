@@ -5,7 +5,6 @@
 //  Created by Knud S Knudsen on 2018-01-24.
 //  Copyright © 2018 TechConficio. All rights reserved.
 //
-
 #import "ViewController.h"
 
 @interface ViewController ()
@@ -43,7 +42,6 @@
   
   [self.ledSwitch setOn:NO animated:YES];
   [self.ledSwitch setEnabled:NO];
-
   [self.ledImage setImage:[UIImage imageNamed:@"BulbOff"]];
   
   // Make a list of services that a peripheral has to have for us to care.
@@ -60,7 +58,6 @@
   uint8_t off[1] = {0x00};
   offMessage = [NSData dataWithBytes:off length:1];
 }
-
 
 - (void)didReceiveMemoryWarning {
   [super didReceiveMemoryWarning];
