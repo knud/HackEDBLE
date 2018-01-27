@@ -50,6 +50,8 @@ static int rssi = 0;
     NSLog(@"State = %ld (%@)\r\n", (long) self.CM.state, [BLEUtils centralManagerStateToString:self.CM.state]);
     return -1;
   }
+  [self.peripherals removeAllObjects];
+  [self.advertisingData removeAllObjects];
   
   [NSTimer scheduledTimerWithTimeInterval:(float)timeout target:self selector:@selector(scanTimer:) userInfo:nil repeats:NO];
   
@@ -340,9 +342,9 @@ static int rssi = 0;
 {
   NSLog(@"new peripheraal with RSSI %@",RSSI);
   if (!self.peripherals)
-    self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
+    self.peripherals = [[NSMutableArray alloc] initWithCapacity:1];
   if (!self.advertisingData)
-    self.advertisingData = [[NSMutableArray alloc] initWithObjects:advertisementData,nil];
+    self.advertisingData = [[NSMutableArray alloc] initWithCapacity:1];
   for(int i = 0; i < self.peripherals.count; i++)
   {
     CBPeripheral *p = [self.peripherals objectAtIndex:i];
@@ -357,8 +359,14 @@ static int rssi = 0;
       return;
     }
   }
-  [self.peripherals addObject:peripheral];
-  [self.advertisingData addObject:advertisementData];
+  if (peripheral.name) {
+    NSLog(@" ------- adding peripheral %@",peripheral.name);
+    [self.peripherals addObject:peripheral];
+    if (advertisingData)
+      [self.advertisingData addObject:advertisementData];
+    else
+      NSLog(@"advertising data is nil");
+  }
 }
 
 #pragma mark - CBCentralManagerDelegate monitoring changes to the central manager's state

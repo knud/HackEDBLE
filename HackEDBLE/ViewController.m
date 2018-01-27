@@ -117,12 +117,16 @@
   // look for the Nano for 3 seconds
   [ble findPeripherals:3];
   
-  [NSTimer scheduledTimerWithTimeInterval:(float)3.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
+  [NSTimer scheduledTimerWithTimeInterval:(float)5.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
 }
 
 -(void) connectionTimer:(NSTimer *)timer
 {
   NSLog(@"connectionTimer");
+  if (!connected) {
+    [self.connectToNanoButton setEnabled:YES];
+    [self.connectToNanoButton setBackgroundColor:[UIColor redColor]];
+  }
   // TODO turn off progress indicator
 //  [activityIndicator stopAnimating];
 }
@@ -154,14 +158,35 @@
   }
 }
 
+-(void) bleFindPeripheralsFinished
+{
+  scanningForPeripherals = false;
+  
+  if (self.ble.peripherals) {
+    for (int i = 0; i < [self.ble.peripherals count]; i++) {
+      CBPeripheral *p = [self.ble.peripherals objectAtIndex:i];
+      NSDictionary *ad = [self.ble.advertisingData objectAtIndex:i];
+      NSString *deviceName = [ad valueForKey:CBAdvertisementDataLocalNameKey];
+      if (deviceName)
+      {
+        if ([deviceName compare:@BLE_DEVICE_NAME] == NSOrderedSame) {
+          NSLog(@"Got peripheral %@",deviceName);
+          connected = true;
+          [self.connectToNanoButton setEnabled:YES];
+          
+          [self.connectToNanoButton setBackgroundColor:[UIColor greenColor]];
+          self.peripheral = p;
+          [self.ble connectPeripheral:self.peripheral];
+        }
+      }
+    }
+  }
+}
+
 // When connected, this will be called
 -(void) bleDidConnect
 {
   NSLog(@"->Connected");
-  connected = true;
-  [self.connectToNanoButton setEnabled:YES];
-
-  [self.connectToNanoButton setBackgroundColor:[UIColor greenColor]];
 
   // Find the service
   CBUUID *serviceUUID = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
@@ -178,6 +203,8 @@
   [self.connectToNanoButton setBackgroundColor:[UIColor redColor]];
   [self.ledSwitch setOn:NO animated:YES];
   [self.ledSwitch setEnabled:NO];
+  [self.ledImage setImage:[UIImage imageNamed:@"BulbOff"]];
+  [self.ble write:offMessage toUUID:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]];
 
 }
 
@@ -254,25 +281,6 @@
     if ([c.UUID.UUIDString isEqual:txCharacteristicUUID.UUIDString])
     {
       [self.ledSwitch setEnabled:YES];
-    }
-  }
-}
-
--(void) bleFindPeripheralsFinished
-{
-  scanningForPeripherals = false;
-  
-  if (self.ble.peripherals) {
-    for (int i = 0; i < [self.ble.peripherals count]; i++) {
-      CBPeripheral *p = [self.ble.peripherals objectAtIndex:i];
-      NSDictionary *ad = [self.ble.advertisingData objectAtIndex:i];
-      NSString *deviceName = [ad valueForKey:CBAdvertisementDataLocalNameKey];
-      NSLog(@"advertising data device name %@",deviceName);
-      if ([deviceName compare:@BLE_DEVICE_NAME] == NSOrderedSame) {
-        NSLog(@"Get characteristics for %@",deviceName);
-        self.peripheral = p;
-        [self.ble connectPeripheral:self.peripheral];
-      }
     }
   }
 }
