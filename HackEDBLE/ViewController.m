@@ -2,7 +2,7 @@
 //  ViewController.m
 //  HackEDBLE
 //
-//  Created by Knud S Knudsen on 2018-01-24.
+//  Created by Knud S Knudsen on 2018-11-13.
 //  Copyright © 2018 TechConficio. All rights reserved.
 //
 #import "ViewController.h"
@@ -15,7 +15,7 @@
   UIBarButtonItem *busyBarButton;
   CBUUID *targetPeripheralService;
   bool scanningForPeripherals;
-  CBPeripheral *bleNanoPeripheral;
+  CBPeripheral *bleDonglePeripheral;
   NSData *onMessage;
   NSData *offMessage;
 }
@@ -26,27 +26,27 @@
 @synthesize ble;
 @synthesize peripheral;
 @synthesize service;
-@synthesize connectToNanoButton;
+@synthesize connectToDongle;
 @synthesize ledSwitch;
-@synthesize ledImage;
+@synthesize buttonImage;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   connected = false;
-  self.connectToNanoButton.layer.cornerRadius = 4.0;
-  self.connectToNanoButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+  self.connectToDongle.layer.cornerRadius = 4.0;
+  self.connectToDongle.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 
-  [self.connectToNanoButton setTitle:@"Searching..." forState:UIControlStateDisabled];
-  [self.connectToNanoButton setTitleColor:[UIColor darkGrayColor] forState:UIControlStateDisabled];
+  [self.connectToDongle setTitle:@"Searching..." forState:UIControlStateDisabled];
+  [self.connectToDongle setTitleColor:[UIColor darkGrayColor] forState:UIControlStateDisabled];
   
   [self.ledSwitch setOn:NO animated:YES];
   [self.ledSwitch setEnabled:NO];
-  [self.ledImage setImage:[UIImage imageNamed:@"BulbOff"]];
+  [self.buttonImage setImage:[UIImage imageNamed:@"ButtonOpenFinger"]];
   
   // Make a list of services that a peripheral has to have for us to care.
   // Only have the one to date...
-  NSString *serviceUUIDStr = @BLE_NANO_SERVICE_UUID;
+  NSString *serviceUUIDStr = @BLE_DONGLE_SERVICE_UUID;
   targetPeripheralService = [CBUUID UUIDWithString:serviceUUIDStr];
   scanningForPeripherals = false;
   
@@ -66,9 +66,9 @@
 
 #pragma mark - UI actions
 
-- (IBAction)findNano:(UIButton *)sender
+- (IBAction)findDongle:(UIButton *)sender
 {
-  NSLog(@"findNano");
+  NSLog(@"find nRF52840 Dongle");
 
   if (connected && self.peripheral != nil)
     [self.ble disconnectPeripheral:self.peripheral];
@@ -76,23 +76,21 @@
   {
     connected = false;
     self.peripheral = nil;
-    [self.connectToNanoButton setEnabled:NO];
-    [self.connectToNanoButton setBackgroundColor:[UIColor lightGrayColor]];
+    [self.connectToDongle setEnabled:NO];
+    [self.connectToDongle setBackgroundColor:[UIColor lightGrayColor]];
     [self scanForPeripherals];
   }
 }
 
 - (IBAction)ledSwitched:(UISwitch *)sender {
   if (self.ledSwitch.isOn) {
-    NSLog(@"switched on");
-    [self.ledImage setImage:[UIImage imageNamed:@"BulbOn"]];
-    [self.ble write:onMessage toUUID:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]];
+    NSLog(@"led on");
+    [self.ble write:onMessage toUUID:[CBUUID UUIDWithString:@BLE_DONGLE_LED_CHAR_UUID]];
   }
   else
   {
-    NSLog(@"switched off");
-    [self.ledImage setImage:[UIImage imageNamed:@"BulbOff"]];
-    [self.ble write:offMessage toUUID:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]];
+    NSLog(@"led off");
+    [self.ble write:offMessage toUUID:[CBUUID UUIDWithString:@BLE_DONGLE_LED_CHAR_UUID]];
   }
 }
 
@@ -111,7 +109,7 @@
   if (ble.peripherals)
     ble.peripherals = nil;
   
-  // look for the Nano for 3 seconds
+  // look for the Dongle for 3 seconds
   [ble findPeripherals:3];
   
   [NSTimer scheduledTimerWithTimeInterval:(float)5.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
@@ -121,8 +119,8 @@
 {
   NSLog(@"connectionTimer");
   if (!connected) {
-    [self.connectToNanoButton setEnabled:YES];
-    [self.connectToNanoButton setBackgroundColor:[UIColor redColor]];
+    [self.connectToDongle setEnabled:YES];
+    [self.connectToDongle setBackgroundColor:[UIColor redColor]];
   }
   // TODO turn off progress indicator
 //  [activityIndicator stopAnimating];
@@ -169,9 +167,9 @@
         if ([deviceName compare:@BLE_DEVICE_NAME] == NSOrderedSame) {
           NSLog(@"Got peripheral %@",deviceName);
           connected = true;
-          [self.connectToNanoButton setEnabled:YES];
+          [self.connectToDongle setEnabled:YES];
           
-          [self.connectToNanoButton setBackgroundColor:[UIColor greenColor]];
+          [self.connectToDongle setBackgroundColor:[UIColor greenColor]];
           self.peripheral = p;
           [self.ble connectPeripheral:self.peripheral];
         }
@@ -186,7 +184,7 @@
   NSLog(@"->Connected");
 
   // Find the service
-  CBUUID *serviceUUID = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
+  CBUUID *serviceUUID = [CBUUID UUIDWithString:@BLE_DONGLE_SERVICE_UUID];
   NSArray<CBUUID *> *serviceUUIDs = [NSArray arrayWithObjects:serviceUUID, nil];
   [self.ble findServicesFrom:self.peripheral services:serviceUUIDs];
 }
@@ -195,13 +193,13 @@
 {
   NSLog(@"->Disconnected");
   connected = false;
-  [self.connectToNanoButton setEnabled:YES];
+  [self.connectToDongle setEnabled:YES];
 
-  [self.connectToNanoButton setBackgroundColor:[UIColor redColor]];
+  [self.connectToDongle setBackgroundColor:[UIColor redColor]];
   [self.ledSwitch setOn:NO animated:YES];
   [self.ledSwitch setEnabled:NO];
-  [self.ledImage setImage:[UIImage imageNamed:@"BulbOff"]];
-  [self.ble write:offMessage toUUID:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]];
+  [self.buttonImage setImage:[UIImage imageNamed:@"ButtonOpenFinger"]];
+  [self.ble write:offMessage toUUID:[CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID]];
 
 }
 
@@ -221,7 +219,7 @@
     {
       unsigned long numServices = [self.ble.activePeripheral.services count];
       NSLog(@" %lu services found for %@",numServices,self.ble.activePeripheral.name);
-      CBUUID *serviceUUID = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
+      CBUUID *serviceUUID = [CBUUID UUIDWithString:@BLE_DONGLE_SERVICE_UUID];
       for (int i = 0; i < numServices; i++)
       {
         CBService *s = [self.ble.activePeripheral.services objectAtIndex:i];
@@ -229,9 +227,9 @@
         if ([s.UUID.UUIDString isEqual:serviceUUID.UUIDString])
         {
           self.service = s;
-          CBUUID *txCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
-          CBUUID *rxCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_RX_CHAR_UUID];
-          NSArray<CBUUID *> *characteristicUUIDs = [NSArray arrayWithObjects:txCharacteristicUUID,rxCharacteristicUUID, nil];
+          CBUUID *buttonCharacteristicUUID = [CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID];
+          CBUUID *ledCharacteristicUUID = [CBUUID UUIDWithString:@BLE_DONGLE_LED_CHAR_UUID];
+          NSArray<CBUUID *> *characteristicUUIDs = [NSArray arrayWithObjects:buttonCharacteristicUUID,ledCharacteristicUUID, nil];
           NSLog(@"  ->findCharacteristicsFrom");
           [self.ble findCharacteristicsFrom:self.peripheral characteristicUUIDs:(NSArray<CBUUID *> *)characteristicUUIDs];
           return;
@@ -244,8 +242,8 @@
 -(void) bleServiceCharacteristicsFound
 {
   NSLog(@"->bleServiceCharacteristicsFound");
-  CBUUID *txCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
-  CBUUID *rxCharacteristicUUID = [CBUUID UUIDWithString:@BLE_NANO_RX_CHAR_UUID];
+  CBUUID *buttonCharacteristicUUID = [CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID];
+  CBUUID *ledCharacteristicUUID = [CBUUID UUIDWithString:@BLE_DONGLE_LED_CHAR_UUID];
   for (int i=0; i < self.service.characteristics.count; i++)
   {
     CBCharacteristic *c = [service.characteristics objectAtIndex:i];
@@ -271,15 +269,28 @@
     if (c.properties & CBCharacteristicPropertyAuthenticatedSignedWrites)
       printf("  has authenticated signed writes\n");
     
-    if ([c.UUID.UUIDString isEqual:rxCharacteristicUUID.UUIDString]) {
+    if ([c.UUID.UUIDString isEqual:buttonCharacteristicUUID.UUIDString]) {
       // enable notification for this characteristic on the peripheral
       [self.ble.activePeripheral setNotifyValue:YES forCharacteristic:c];
     }
-    if ([c.UUID.UUIDString isEqual:txCharacteristicUUID.UUIDString])
+    if ([c.UUID.UUIDString isEqual:ledCharacteristicUUID.UUIDString])
     {
       [self.ledSwitch setEnabled:YES];
     }
   }
+}
+
+-(void) bleHaveDataFor:(CBCharacteristic *)characteristic
+{
+    // Usually check the characteristic, but we know it's from the Button
+    NSData *data = [characteristic value];
+    uint8_t  state = ((uint8_t *)[data bytes])[0];
+    NSLog(@"value %d",state);
+    if(state)
+        [self.buttonImage setImage:[UIImage imageNamed:@"ButtonCloseFinger"]];
+    else
+        [self.buttonImage setImage:[UIImage imageNamed:@"ButtonOpenFinger"]];
+
 }
 
 @end

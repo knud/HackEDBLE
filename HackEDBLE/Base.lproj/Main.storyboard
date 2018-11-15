@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.30.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.19.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,13 +25,12 @@
                                     <action selector="ledSwitched:" destination="BYZ-38-t0r" eventType="valueChanged" id="GJ3-A2-2cI"/>
                                 </connections>
                             </switch>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aah-Pp-MnP">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" highlightedImage="ButtonCloseFinger" translatesAutoresizingMaskIntoConstraints="NO" id="aah-Pp-MnP">
                                 <rect key="frame" x="153" y="453" width="108" height="160"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="LED" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iZd-7m-fEB">
-                                <rect key="frame" x="136" y="366" width="31" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LED" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iZd-7m-fEB">
+                                <rect key="frame" x="145" y="367" width="31" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
@@ -39,23 +38,29 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lE-Xm-ctq">
-                                <rect key="frame" x="126" y="243" width="162" height="37"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lE-Xm-ctq">
+                                <rect key="frame" x="132.66666666666666" y="240" width="148.99999999999997" height="28"/>
                                 <color key="backgroundColor" red="1" green="0.14596255699999999" blue="0.1223737369" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="Connect to Nano"/>
+                                <inset key="contentEdgeInsets" minX="10" minY="5" maxX="10" maxY="5"/>
+                                <state key="normal" title="Connect to Dongle"/>
                                 <connections>
-                                    <action selector="findNano:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9fR-zw-RH2"/>
+                                    <action selector="findDongle:" destination="BYZ-38-t0r" eventType="touchUpInside" id="J7g-Sk-4lG"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="8lE-Xm-ctq" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-114" id="Bbo-fr-hE0"/>
+                            <constraint firstItem="iZd-7m-fEB" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" constant="-46.5" id="Kxn-d9-LZO"/>
+                            <constraint firstItem="iZd-7m-fEB" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="9.5" id="ZaA-Eq-HoV"/>
+                            <constraint firstItem="8lE-Xm-ctq" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xbf-7i-Duz"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="connectToNanoButton" destination="8lE-Xm-ctq" id="lUY-mV-ioe"/>
-                        <outlet property="ledImage" destination="aah-Pp-MnP" id="OdY-di-zfW"/>
+                        <outlet property="buttonImage" destination="aah-Pp-MnP" id="OdY-di-zfW"/>
+                        <outlet property="connectToDongle" destination="8lE-Xm-ctq" id="lUY-mV-ioe"/>
                         <outlet property="ledSwitch" destination="Jxw-qk-gdf" id="DcL-Ah-YIQ"/>
                     </connections>
                 </viewController>
@@ -64,4 +69,7 @@
             <point key="canvasLocation" x="213.59999999999999" y="8.5457271364317844"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="ButtonCloseFinger" width="125.90164184570312" height="204.59016418457031"/>
+    </resources>
 </document>

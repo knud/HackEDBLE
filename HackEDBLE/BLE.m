@@ -3,7 +3,7 @@
 //  BLE.m
 //  HackEDBLE
 //
-//  Created by Knud S Knudsen on 2018-01-24.
+//  Created by Knud S Knudsen on 2018-11-13.
 //  Copyright © 2018 TechConficio. All rights reserved.
 //
 
@@ -58,7 +58,7 @@ static int rssi = 0;
   // set up find peripherals that provide specified service(s)
   // TODO seems to be broken currently, so find any peripheral and then filter in the delegate
 #if 0
-  NSString *serviceUUIDStr = @BLE_NANO_SERVICE_UUID;
+  NSString *serviceUUIDStr = @BLE_DONGLE_SERVICE_UUID;
   NSLog(@"Scanning for service UUID %@",serviceUUIDStr);
   CBUUID *serviceUUID = [CBUUID UUIDWithString:serviceUUIDStr];
   NSArray<CBUUID *> *services = [NSArray arrayWithObjects:serviceUUID, nil];
@@ -190,15 +190,15 @@ static int rssi = 0;
 
 -(void) read
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
-  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_DONGLE_SERVICE_UUID];
+  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID];
   
   [self readValue:uuid_service characteristicUUID:uuid_char p:activePeripheral];
 }
 
 -(void) write:(NSData *)data toUUID:(CBUUID *)uuid
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_DONGLE_SERVICE_UUID];
   
   [self writeValue:uuid_service characteristicUUID:uuid p:activePeripheral data:data];
 }
@@ -261,8 +261,8 @@ static int rssi = 0;
 
 -(void) enableReadNotification:(CBPeripheral *)p
 {
-  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_NANO_SERVICE_UUID];
-  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID];
+  CBUUID *uuid_service = [CBUUID UUIDWithString:@BLE_DONGLE_SERVICE_UUID];
+  CBUUID *uuid_char = [CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID];
   
   [self notification:uuid_service characteristicUUID:uuid_char p:p on:YES];
 }
@@ -479,24 +479,16 @@ static int rssi = 0;
   }
   else
   {
-    // Log any characteristic updates
-//    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@ENVISAS_COMMAND_SPARE_CHARACTERISTIC_UUID]])
-//      NSLog(@"didUpdateValueForCharacteristic for %@",@ENVISAS_COMMAND_SPARE_CHARACTERISTIC_UUID);
-//
-//    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@BLE_NANO_TX_CHAR_UUID]])
-//      NSLog(@"didUpdateValueForCharacteristic for %@",@BLE_NANO_TX_CHAR_UUID);
-
-    // We use this characteristic to exchange messages with the peripheral, so pass the update
-    // along to the delegate
-    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@BLE_NANO_RX_CHAR_UUID]]) {
-//      NSLog(@"didUpdateValueForCharacteristic for %@",@BLE_NANO_RX_CHAR_UUID);
+    // We expect only the button characteristic to provide notifications.
+    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@BLE_DONGLE_BUTTON_CHAR_UUID]]) {
+//      NSLog(@"didUpdateValueForCharacteristic for %@",@BLE_DONGLE_BUTTON_CHAR_UUID);
+      // Always expect a value, but best to check
       if (characteristic.value) {
-//        NSLog(@"read value got %lu data",[characteristic.value length]);
         [[self delegate] bleHaveDataFor:characteristic];
       } else {
         NSLog(@"read value returned null characteristic.value");
       }
-    } // if update for command messaging
+    } // if update for button change
   }
 }
 
@@ -551,7 +543,7 @@ static int rssi = 0;
   }
   else
   {
-    NSLog(@"Updated notification state for characteristic with UUID %@ on service with  UUID %@ for peripheral with UUID %@\r\n",
+    NSLog(@"Updated notification state for characteristic with UUID %@ on service with UUID %@ for peripheral with name %@\r\n",
           [BLEUtils CBUUIDToString:characteristic.UUID],
           [BLEUtils CBUUIDToString:characteristic.service.UUID],peripheral.name);
     if (characteristic.isNotifying)
